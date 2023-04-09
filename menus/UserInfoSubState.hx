@@ -78,9 +78,10 @@ class UserInfoSubState extends MusicBeatSubstate
 			var trophTotal:Null<Array<Trophy>> = GJClient.getTrophiesList(null);
 			var trophAchieved:Int = 0;
 
-			for (troph in trophTotal)
-				if (troph.achieved != 'false')
-					trophAchieved++;
+			if (trophTotal != null)
+				for (troph in trophTotal)
+					if (troph.achieved != 'false')
+						trophAchieved++;
 
 			var trophGained = trophTotal != null ? '$trophAchieved/${trophTotal.length}' : 'N/A';
 
@@ -147,10 +148,12 @@ class UserInfoSubState extends MusicBeatSubstate
 
 		if (controls.BACK)
 		{
-			FlxTween.tween(bg, {alpha: 0}, 0.7, {onComplete: function(twn:FlxTween)
-			{
-				close();
-			}});
+			FlxTween.tween(bg, {alpha: 0}, 0.7, {
+				onComplete: function(twn:FlxTween)
+				{
+					close();
+				}
+			});
 			FlxTween.tween(extraBG, {alpha: 0}, 0.7);
 			if (curUser != null)
 			{
