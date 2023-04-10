@@ -1,5 +1,6 @@
 package gamejolt.menus;
 
+import flixel.graphics.FlxGraphic;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
@@ -11,7 +12,7 @@ class UserInfoSubState extends MusicBeatSubstate
 {
 	var bg:FlxSprite;
 	var extraBG:FlxSprite;
-	var userPhoto:FlxSprite;
+	var userPhoto:Null<FlxSprite> = null;
 	var missInfo:FlxText;
 	var curUser:Null<User>;
 
@@ -66,16 +67,20 @@ class UserInfoSubState extends MusicBeatSubstate
 			var daFont2:String = "VCR OSD Mono";
 			var imgRatio:Int = Std.int(extraBG.width * 0.25);
 
-			userPhoto = new FlxSprite().loadGraphic(Paths.image('user'));
-			userPhoto.setGraphicSize(imgRatio, imgRatio);
-			userPhoto.updateHitbox();
-			userPhoto.antialiasing = ClientPrefs.globalAntialiasing;
-			userPhoto.scrollFactor.set();
-			userPhoto.alpha = 0;
-			userPhoto.y = extraBG.y + sep2;
-			userPhoto.x = extraBG.x + extraBG.width - userPhoto.width - (sep2 * 3);
+			var daPic:Null<FlxGraphic> = GJClient.userGraphics.get(curUser.id);
+			if (daPic != null)
+			{
+				userPhoto = new FlxSprite().loadGraphic(daPic);
+				userPhoto.setGraphicSize(imgRatio, imgRatio);
+				userPhoto.updateHitbox();
+				userPhoto.antialiasing = ClientPrefs.globalAntialiasing;
+				userPhoto.scrollFactor.set();
+				userPhoto.alpha = 0;
+				userPhoto.y = extraBG.y + sep2;
+				userPhoto.x = extraBG.x + extraBG.width - userPhoto.width - (sep2 * 3);
+			}
 
-			var trophTotal:Null<Array<Trophy>> = GJClient.getTrophiesList(null);
+			var trophTotal:Null<Array<Trophy>> = GJClient.getTrophiesList();
 			var trophAchieved:Int = 0;
 
 			if (trophTotal != null)
@@ -97,7 +102,7 @@ class UserInfoSubState extends MusicBeatSubstate
 				'Website: ${curUser.developer_website != '' ? curUser.developer_website : "(Not Available)"}');
 			userWeb.setFormat(daFont, daSize, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
 			var userDesc = new FlxText(userWeb.x, userWeb.y + (userWeb.height * 3) + sep, extraBG.width - sep2,
-				'Description: ${curUser.developer_description}');
+				'Description: ${curUser.developer_description != '' ? curUser.developer_description : "(Not Available)"}');
 			userDesc.setFormat(daFont2, Std.int(daSize * 1.5), FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
 
 			add(userName);
@@ -114,7 +119,9 @@ class UserInfoSubState extends MusicBeatSubstate
 			}
 
 			add(userDesc);
-			add(userPhoto);
+
+			if (userPhoto != null)
+				add(userPhoto);
 
 			forEachOfType(FlxText, function(txt:FlxText)
 			{
@@ -123,7 +130,8 @@ class UserInfoSubState extends MusicBeatSubstate
 				txt.visible = false;
 			});
 
-			FlxTween.tween(userPhoto, {alpha: 1}, 0.7);
+			if (userPhoto != null)
+				FlxTween.tween(userPhoto, {alpha: 1}, 0.7);
 		}
 
 		FlxTween.tween(bg, {alpha: 1}, 0.7, {
@@ -157,7 +165,9 @@ class UserInfoSubState extends MusicBeatSubstate
 			FlxTween.tween(extraBG, {alpha: 0}, 0.7);
 			if (curUser != null)
 			{
-				FlxTween.tween(userPhoto, {alpha: 0}, 0.7);
+				if (userPhoto != null)
+					FlxTween.tween(userPhoto, {alpha: 0}, 0.7);
+
 				forEachOfType(FlxText, function(txt:FlxText)
 				{
 					FlxTween.tween(txt, {alpha: 0}, 0.7);
